@@ -16,7 +16,7 @@ def apply_random_transformations(img):
     img = img.rotate(rotation_angle, expand=True)
     return img
 
-def export_word_to_png(word, font_name, image_size_height, image_size_width, text_size, output_folder, text_color, bg_color, text_color_influence, flip_text_overlay, text_overlay, bg_color_influence, bg_overlay):
+def export_word_to_png(word, font_name, image_size_height, image_size_width, text_size, text_horizontal_move, text_vertical_move, output_folder, text_color, bg_color, text_color_influence, flip_text_overlay, text_overlay, bg_color_influence, bg_overlay):
     word = word.replace(" ", "")
     font_name = font_name.name
     # create output folder if it doesn't exist
@@ -48,8 +48,9 @@ def export_word_to_png(word, font_name, image_size_height, image_size_width, tex
 
         # draw the letter in the center of the image
         w, h = draw.textsize(letter, font=font)
-        x = (image_size_width - w) / 2
-        y = (image_size_height - h) / 2
+
+        x = (image_size_width - w) / 2 + text_horizontal_move
+        y = (image_size_height - h) / 2 + text_vertical_move
         draw.text((x, y), letter, font=font, fill=text_color)
 
         # apply text overlay if specified
@@ -86,6 +87,8 @@ word_input = gr.inputs.Textbox(label="Word", default="Hello world!")
 image_size_height_input = gr.inputs.Slider(minimum=512, maximum=1024, step=64, label="Image Size h", default=512)
 image_size_width_input = gr.inputs.Slider(minimum=512, maximum=1024, step=64, label="Image Size w", default=512)
 text_size_input = gr.inputs.Slider(minimum=50, maximum=1024, step=10, label="Text Size", default=350)
+text_horizontal_move_input = gr.inputs.Slider(minimum=-300, maximum=300, step=10, label="horizontal location correction _", default=0)
+text_vertical_move_input = gr.inputs.Slider(minimum=-300, maximum=300, step=10, label="vertical location correction |", default=0)
 output_folder_input = gr.inputs.Textbox(label="Output Folder", default="output")
 
 text_color_input = gr.ColorPicker(label="Text Color", value="#ffffff")
@@ -104,7 +107,7 @@ gallery = gr.Gallery(
         ).style(grid=[2], height="auto")
 
 interface = gr.Interface(fn=export_word_to_png, 
-                         inputs=[word_input, font_input, image_size_height_input, image_size_width_input, text_size_input, 
+                         inputs=[word_input, font_input, image_size_height_input, image_size_width_input, text_size_input,text_horizontal_move_input, text_vertical_move_input,  
                                  output_folder_input, text_color_input, bg_color_input, text_influence_input, flip_text_overlay_input, text_overlay_input, bg_influence_input, bg_overlay_input], 
                          outputs=[output, gallery], 
                          title="Export Word to PNG Images",
